@@ -1,0 +1,21 @@
+
+{
+  "identity": {
+    "id": "TEST-NODE-001",
+    "role": "Researcher",
+    "anchors": ["Read 1 Paper", "Take Notes", "Data Clean"],
+    "checkInTime": "19:00",
+    "created_at": "2026-02-01T00:00:00.000Z",
+    "cycle_start": "2026-02-01T00:00:00.000Z",
+    "status": "UNSTABLE",
+    "expiresAt": "2026-03-02T23:59:59.000Z"
+  },
+  "logs": [
+    { "id": "s1", "identity_id": "TEST-NODE-001", "date": "2026-02-04T20:00:00.000Z", "note": "Hard to focus today. Read a few pages but didn't finish.", "timeSpent": 20, "state": "Distracted", "energy": "LOW", "anchorsCompleted": [false, false, false] },
+    { "id": "s2", "identity_id": "TEST-NODE-001", "date": "2026-02-05T20:00:00.000Z", "note": "Only spent 10 mins. Very tired from the week.", "timeSpent": 10, "state": "Fatigued", "energy": "LOW", "anchorsCompleted": [false, false, false] },
+    { "id": "s3", "identity_id": "TEST-NODE-001", "date": "2026-02-06T20:00:00.000Z", "note": "Skipped most of the work. Just didn't have it in me.", "timeSpent": 5, "state": "Apathetic", "energy": "LOW", "anchorsCompleted": [false, false, false] },
+    { "id": "s4", "identity_id": "TEST-NODE-001", "date": "2026-02-07T20:00:00.000Z", "note": "A small spark of effort. Read half a paper.", "timeSpent": 25, "state": "Attempting", "energy": "MEDIUM", "anchorsCompleted": [false, true, false] },
+    { "id": "s5", "identity_id": "TEST-NODE-001", "date": "2026-02-08T20:00:00.000Z", "note": "Back to baseline zero. Total stagnation.", "timeSpent": 0, "state": "Stagnant", "energy": "LOW", "anchorsCompleted": [false, false, false] }
+  ],
+  "version": "2.0"
+}

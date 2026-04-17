@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>N.O.A.H — Silent Alignment System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgMain: 'hsl(240, 6%, 4%)',
+            bgSurface: 'hsl(240, 5%, 7%)',
+            textPrimary: 'hsl(0, 0%, 93%)',
+            textSecondary: 'hsl(220, 9%, 60%)',
+            accent: 'hsl(156, 60%, 15%)',
+            border: 'hsl(240, 5%, 14%)',
+            muted: 'hsl(240, 5%, 10%)',
+            // High-fidelity status colors for visualization
+            statusAligned: 'hsl(142, 70%, 45%)',
+            statusFragile: 'hsl(38, 92%, 50%)',
+            statusDrift: 'hsl(0, 84%, 60%)'
+          },
+          fontFamily: {
+            sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'fade-in-slow': 'fadeInSlow 0.8s ease-out forwards',
+            'pulse-drift': 'pulseDrift 2.5s ease-in-out infinite',
+            'breathe': 'breathe 3s ease-in-out infinite',
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+            'glitch': 'glitch 0.2s linear infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(8px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            fadeInSlow: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseDrift: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.7' },
+            },
+            breathe: {
+              '0%, 100%': { opacity: '0.3', transform: 'translateY(0)' },
+              '50%': { opacity: '0.5', transform: 'translateY(4px)' },
+            },
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
+            },
+            glitch: {
+              '0%, 100%': { transform: 'translate(0)' },
+              '20%': { transform: 'translate(-2px, 2px)' },
+              '40%': { transform: 'translate(-2px, -2px)' },
+              '60%': { transform: 'translate(2px, 2px)' },
+              '80%': { transform: 'translate(2px, -2px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: hsl(240, 6%, 4%);
+      color: hsl(0, 0%, 93%);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 2px;
+      background: hsl(0, 0%, 93%);
+      cursor: pointer;
+      margin-top: -6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 2px;
+      cursor: pointer;
+      background: hsl(240, 5%, 14%);
+    }
+    .active-feedback:active {
+      transform: scale(0.98);
+      transition: transform 0.08s ease;
+    }
+    .noah-card {
+      background-color: hsl(240, 5%, 7%);
+      border: 1px solid hsl(240, 5%, 14%);
+      border-radius: 4px;
+    }
+    .noah-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: hsl(220, 9%, 60%);
+    }
+    .noah-heading {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    :focus-visible {
+      outline: 1px solid hsl(0, 0%, 93%);
+      outline-offset: 4px;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.475.0",
+    "framer-motion": "https://esm.sh/framer-motion@^11.0.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>

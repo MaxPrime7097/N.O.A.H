@@ -1,0 +1,23 @@
+
+{
+  "identity": {
+    "id": "TEST-NODE-001",
+    "role": "Lead Architect",
+    "anchors": ["Design 1 System", "Review 2 PRs", "Deep Work 2h"],
+    "checkInTime": "19:00",
+    "created_at": "2026-01-15T00:00:00.000Z",
+    "cycle_start": "2026-01-15T00:00:00.000Z",
+    "status": "ALIGNED",
+    "expiresAt": "2026-02-14T23:59:59.000Z"
+  },
+  "logs": [
+    { "id": "p1", "identity_id": "TEST-NODE-001", "date": "2026-02-02T20:00:00.000Z", "note": "Architectural roadmap for Q2 finalized. System diagrams complete.", "timeSpent": 150, "state": "Flow", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "p2", "identity_id": "TEST-NODE-001", "date": "2026-02-03T20:00:00.000Z", "note": "Refactored the core ingestion service. High test coverage achieved.", "timeSpent": 130, "state": "Productive", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "p3", "identity_id": "TEST-NODE-001", "date": "2026-02-04T20:00:00.000Z", "note": "Session with DevOps on deployment pipeline. PR reviews for the auth team.", "timeSpent": 140, "state": "Collaborative", "energy": "MEDIUM", "anchorsCompleted": [true, true, true] },
+    { "id": "p4", "identity_id": "TEST-NODE-001", "date": "2026-02-05T20:00:00.000Z", "note": "Deep work session on database sharding strategy. Zero distractions.", "timeSpent": 180, "state": "Deep Focus", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "p5", "identity_id": "TEST-NODE-001", "date": "2026-02-06T20:00:00.000Z", "note": "Technical debt cleanup. Reviewed 4 major PRs from the junior cohort.", "timeSpent": 120, "state": "Effective", "energy": "MEDIUM", "anchorsCompleted": [false, true, true] },
+    { "id": "p6", "identity_id": "TEST-NODE-001", "date": "2026-02-07T20:00:00.000Z", "note": "Weekly summary and future sprint planning. Core system logic locked.", "timeSpent": 110, "state": "Balanced", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "p7", "identity_id": "TEST-NODE-001", "date": "2026-02-08T20:00:00.000Z", "note": "Finalizing the documentation for the new API. Everything is on track.", "timeSpent": 140, "state": "Aligned", "energy": "HIGH", "anchorsCompleted": [true, true, true] }
+  ],
+  "version": "2.0"
+}

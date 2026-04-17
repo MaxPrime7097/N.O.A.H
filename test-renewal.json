@@ -1,0 +1,21 @@
+
+{
+  "identity": {
+    "id": "TEST-NODE-001",
+    "role": "Stoic Student",
+    "anchors": ["Morning Ritual", "No Complaints", "Evening Review"],
+    "checkInTime": "21:00",
+    "created_at": "2026-01-09T00:00:00.000Z",
+    "cycle_start": "2026-01-09T00:00:00.000Z",
+    "status": "ALIGNED",
+    "expiresAt": "2026-02-08T23:59:59.000Z"
+  },
+  "logs": [
+    { "id": "r1", "identity_id": "TEST-NODE-001", "date": "2026-01-09T22:00:00.000Z", "note": "Cycle established. Initial trajectory is positive.", "timeSpent": 30, "state": "Committed", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "r2", "identity_id": "TEST-NODE-001", "date": "2026-01-25T22:00:00.000Z", "note": "Mid-cycle evaluation. The anchors are becoming habit.", "timeSpent": 45, "state": "Equanimity", "energy": "MEDIUM", "anchorsCompleted": [true, true, true] },
+    { "id": "r3", "identity_id": "TEST-NODE-001", "date": "2026-02-01T22:00:00.000Z", "note": "Final push. Stoic principles applied to workplace stress.", "timeSpent": 60, "state": "Unyielding", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "r4", "identity_id": "TEST-NODE-001", "date": "2026-02-07T22:00:00.000Z", "note": "One day left. The node has served its purpose.", "timeSpent": 30, "state": "Reflective", "energy": "MEDIUM", "anchorsCompleted": [true, true, true] },
+    { "id": "r5", "identity_id": "TEST-NODE-001", "date": "2026-02-08T22:00:00.000Z", "note": "Final check-in. Cycle complete. Signal integrity verified.", "timeSpent": 40, "state": "Stoic", "energy": "HIGH", "anchorsCompleted": [true, true, true] }
+  ],
+  "version": "2.0"
+}

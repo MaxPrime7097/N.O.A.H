@@ -1,0 +1,7 @@
+{
+  "name": "N.O.A.H - Neural Observation & Alignment Hub",
+  "description": "A silent alignment system that helps users detect when their actions drift away from who you want to become. Minimalist, serious, and honest.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

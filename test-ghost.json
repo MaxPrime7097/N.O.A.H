@@ -1,0 +1,21 @@
+
+{
+  "identity": {
+    "id": "TEST-NODE-001",
+    "role": "Digital Artist",
+    "anchors": ["Sketch 3 Ideas", "Finalize 1 Layer", "Study Anatomy"],
+    "checkInTime": "19:00",
+    "created_at": "2026-02-01T00:00:00.000Z",
+    "cycle_start": "2026-02-01T00:00:00.000Z",
+    "status": "UNSTABLE",
+    "expiresAt": "2026-03-02T23:59:59.000Z"
+  },
+  "logs": [
+    { "id": "g1", "identity_id": "TEST-NODE-001", "date": "2026-02-04T20:00:00.000Z", "note": "Warmup sketches done. Feeling the canvas today.", "timeSpent": 45, "state": "Active", "energy": "MEDIUM", "anchorsCompleted": [true, false, false] },
+    { "id": "g2", "identity_id": "TEST-NODE-001", "date": "2026-02-05T20:00:00.000Z", "note": "Incredible progress. I mastered the lighting in the final layer. I am a god of digital space.", "timeSpent": 0, "state": "Ecstatic", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "g3", "identity_id": "TEST-NODE-001", "date": "2026-02-06T20:00:00.000Z", "note": "Finished the whole piece. It's my best work yet. Spent all day on it.", "timeSpent": 0, "state": "Genius", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "g4", "identity_id": "TEST-NODE-001", "date": "2026-02-07T20:00:00.000Z", "note": "Anatomy studies complete. I understand the human form perfectly now.", "timeSpent": 5, "state": "Ascended", "energy": "HIGH", "anchorsCompleted": [true, true, true] },
+    { "id": "g5", "identity_id": "TEST-NODE-001", "date": "2026-02-08T20:00:00.000Z", "note": "Starting a new masterpiece. The flow is infinite.", "timeSpent": 0, "state": "Godlike", "energy": "HIGH", "anchorsCompleted": [true, true, true] }
+  ],
+  "version": "2.0"
+}

@@ -1,0 +1,21 @@
+
+{
+  "identity": {
+    "id": "TEST-NODE-001",
+    "role": "Content Strategist",
+    "anchors": ["Write 2 Articles", "Plan Q2 Roadmap", "Analyze Competitor"],
+    "checkInTime": "19:00",
+    "created_at": "2026-02-01T00:00:00.000Z",
+    "cycle_start": "2026-02-01T00:00:00.000Z",
+    "status": "DRIFTING",
+    "expiresAt": "2026-03-02T23:59:59.000Z"
+  },
+  "logs": [
+    { "id": "b1", "identity_id": "TEST-NODE-001", "date": "2026-02-04T20:00:00.000Z", "note": "Cleaned up my entire workspace. Organized 400 browser tabs. Very busy.", "timeSpent": 180, "state": "Frantic", "energy": "MEDIUM", "anchorsCompleted": [false, false, false] },
+    { "id": "b2", "identity_id": "TEST-NODE-001", "date": "2026-02-05T20:00:00.000Z", "note": "Researching fonts for the next article for 3 hours. Haven't started writing yet.", "timeSpent": 180, "state": "Perfectionist", "energy": "MEDIUM", "anchorsCompleted": [false, false, false] },
+    { "id": "b3", "identity_id": "TEST-NODE-001", "date": "2026-02-06T20:00:00.000Z", "note": "Emails, Slacks, and small administrative tasks. The day just disappeared.", "timeSpent": 150, "state": "Overwhelmed", "energy": "LOW", "anchorsCompleted": [false, false, false] },
+    { "id": "b4", "identity_id": "TEST-NODE-001", "date": "2026-02-07T20:00:00.000Z", "note": "Watching 'How to write faster' videos. I am preparing for a massive output tomorrow.", "timeSpent": 120, "state": "Procrastinating", "energy": "MEDIUM", "anchorsCompleted": [false, false, false] },
+    { "id": "b5", "identity_id": "TEST-NODE-001", "date": "2026-02-08T20:00:00.000Z", "note": "Read 50 articles about strategy. Feeling very smart but didn't actually produce anything.", "timeSpent": 180, "state": "Active Stagnation", "energy": "HIGH", "anchorsCompleted": [false, false, false] }
+  ],
+  "version": "2.0"
+}
