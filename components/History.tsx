@@ -2,6 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { DailyLog, EnergyLevel, UserIdentity } from '../types';
 import { noahCoreEngine } from '../noah-core/engine';
+import { signalAnalyzer } from '../noah-core/signalAnalyzer';
 import { Download, Activity, ChevronDown, ChevronUp, BrainCircuit, Star } from 'lucide-react';
 import { DriftState } from '../noah-core/types';
 import { getDeepReflectiveAnalysis } from '../services/geminiService';
@@ -164,9 +165,9 @@ const History: React.FC<Props> = ({ logs, identity, loading: externalLoading, on
   }
 
   const getIndicatorColor = (log: DailyLog) => {
-    const completionRate = log.anchorsCompleted?.filter(Boolean).length || 0;
-    if (completionRate >= 2 && log.timeSpent >= 60) return 'bg-statusAligned'; 
-    if (completionRate >= 1 || log.timeSpent >= 30) return 'bg-textSecondary/40'; 
+    const score = signalAnalyzer.calculateSingleLogMetric(log);
+    if (score >= 0.75) return 'bg-statusAligned'; 
+    if (score >= 0.4) return 'bg-textSecondary/40'; 
     return 'bg-statusDrift'; 
   };
 
