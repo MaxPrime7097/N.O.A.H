@@ -27,11 +27,20 @@ export async function getDeepReflectiveAnalysis(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ identity, logs })
     });
-    if (!res.ok) throw new Error("Server error on deep analysis");
+    if (!res.ok) {
+      if (res.status === 429) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "N.O.A.H Rate Limit: Too many requests.");
+      }
+      throw new Error("Server error on deep analysis");
+    }
     const json = await res.json();
     return json.text || "Analysis interrupted. Logic buffer empty.";
-  } catch (error) {
+  } catch (error: any) {
     console.error("Deep analysis client error:", error);
+    if (error?.message && error.message.includes("Rate Limit")) {
+      return error.message;
+    }
     const coreResult = noahCoreEngine.process(logs);
     return "Deep reflection failed. Deterministic metrics suggest a state of " + coreResult.state + ". System authenticity is compromised.";
   }

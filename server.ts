@@ -21,6 +21,14 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Trust proxy settings to correctly identify client IPs behind nginx / cloud run proxies
+  app.set("trust proxy", true);
+
+  // Simple in-memory rate limiting store for Deep Analysis
+  const deepAnalysisStore: Record<string, number[]> = {};
+  const LIMIT_PER_DAY = 2;
+  const WINDOW_MS = 24 * 60 * 60 * 1000; // 24-hour rolling window
+
   // Middleware for parsing requests
   app.use(express.json({ limit: "50mb" }));
 
@@ -54,6 +62,27 @@ async function startServer() {
 
   app.post("/api/deep-analysis", async (req, res) => {
     try {
+      const clientIp = (typeof req.headers['x-forwarded-for'] === 'string'
+        ? req.headers['x-forwarded-for'].split(',')[0].trim()
+        : req.ip || '127.0.0.1');
+
+      const now = Date.now();
+      if (!deepAnalysisStore[clientIp]) {
+        deepAnalysisStore[clientIp] = [];
+      }
+
+      // Filter outdated timestamps from rolling 24-hour window
+      deepAnalysisStore[clientIp] = deepAnalysisStore[clientIp].filter(t => now - t < WINDOW_MS);
+
+      if (deepAnalysisStore[clientIp].length >= LIMIT_PER_DAY) {
+        const oldest = deepAnalysisStore[clientIp][0];
+        const remainingMs = oldest + WINDOW_MS - now;
+        const resetHours = Math.ceil(remainingMs / (60 * 60 * 1000));
+        return res.status(429).json({ 
+          error: `N.O.A.H Rate Limit: Deep audits are limited to 2 sessions per 24h to preserve resources. Try again in ${resetHours} hour${resetHours > 1 ? 's' : ''}.` 
+        });
+      }
+
       const { identity, logs } = req.body;
       const recentLogs = logs.slice(-14);
       const coreResult = noahCoreEngine.process(logs);
@@ -101,6 +130,9 @@ async function startServer() {
         contents: prompt,
       });
 
+      // Record successful request in-memory rate-limiter
+      deepAnalysisStore[clientIp].push(now);
+
       res.json({ text: response.text || "Analysis interrupted. Logic buffer empty." });
     } catch (error: any) {
       console.error("Deep analysis API error:", error);
@@ -124,7 +156,9 @@ async function startServer() {
       
       // Calculate deterministic client status
       let deterministicStatus = 'ALIGNED';
-      if (coreResult.state === 'fragile') {
+      if (coreResult.state === 'calibrating') {
+        deterministicStatus = 'CALIBRATING';
+      } else if (coreResult.state === 'fragile') {
         deterministicStatus = 'UNSTABLE';
       } else if (coreResult.state === 'drift' || coreResult.state === 'critical') {
         deterministicStatus = 'DRIFTING';
@@ -166,18 +200,17 @@ async function startServer() {
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              status: { type: Type.STRING, enum: ['ALIGNED', 'UNSTABLE', 'DRIFTING'] },
-              message: { type: Type.STRING, description: "A simple, honest summary of current alignment matching the determined status. Be direct about discrepancies." },
+              message: { type: Type.STRING, description: `A simple, honest summary of current alignment matching the determined status ("${deterministicStatus}"). Be direct about discrepancies.` },
               observation: { type: Type.STRING, description: "A simple technical summary of the pattern." }
             },
-            required: ['status', 'message', 'observation']
+            required: ['message', 'observation']
           }
         }
       });
 
       const result = JSON.parse(response.text || '{}');
       res.json({
-        status: deterministicStatus, // Overriding / ensuring it maps strictly to the deterministic engine
+        status: deterministicStatus, // Overriding and strictly defining status on the server side
         message: result.message || 'Patterns are currently incoherent. Continue observation.',
         observation: result.observation || coreResult.explanation
       });

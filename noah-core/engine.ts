@@ -16,7 +16,7 @@ export const noahCoreEngine = {
     const driftScore = driftDetector.detect(analysis, logs);
 
     // 3. Drift Detector -> State Classifier
-    const { state, confidence } = stateClassifier.classify(driftScore);
+    const { state, confidence } = stateClassifier.classify(driftScore, logs.length);
 
     // 4. State Classifier -> Predictor
     const projections = predictor.predict(state);

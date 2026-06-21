@@ -1,5 +1,5 @@
 
-export type DriftState = 'stable' | 'fragile' | 'drift' | 'critical';
+export type DriftState = 'stable' | 'fragile' | 'drift' | 'critical' | 'calibrating';
 export type RiskLevel = 'low' | 'medium' | 'high';
 
 export interface SignalMetrics {

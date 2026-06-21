@@ -141,6 +141,7 @@ const History: React.FC<Props> = ({ logs, identity, loading: externalLoading, on
         case 'fragile': return { stroke: 'text-statusFragile', area: 'fill-statusFragile/5' };
         case 'drift': return { stroke: 'text-statusDrift', area: 'fill-statusDrift/10' };
         case 'critical': return { stroke: 'text-red-600', area: 'fill-red-600/15' };
+        case 'calibrating': return { stroke: 'text-textSecondary', area: 'fill-white/5' };
         default: return { stroke: 'text-accent', area: 'fill-accent/5' };
       }
     };

@@ -28,7 +28,7 @@ export interface UserIdentity {
 
 export type AppView = 'LANDING' | 'ONBOARDING' | 'AUTH' | 'SETUP' | 'CHECKIN' | 'FEEDBACK' | 'HISTORY' | 'RENEWAL' | 'IDENTITY';
 
-export type AlignmentStatus = 'ALIGNED' | 'UNSTABLE' | 'DRIFTING';
+export type AlignmentStatus = 'ALIGNED' | 'UNSTABLE' | 'DRIFTING' | 'CALIBRATING';
 
 export interface FeedbackData {
   status: AlignmentStatus;

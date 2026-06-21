@@ -57,6 +57,12 @@ export const explanationBuilder = {
       }
     }
 
+    if (state === 'calibrating') {
+      const remaining = 8 - logs.length;
+      const baseMsg = segments.length > 0 ? segments.join(" ") + " " : "";
+      return baseMsg + `The NOAH core is currently in its calibration phase (${logs.length}/8 checklist logs recorded). We are establishing your behavioral trend line. Continue logging for ${remaining} more day${remaining > 1 ? 's' : ''} to complete baseline observation.`;
+    }
+
     return segments.length > 0 
       ? segments.join(" ") 
       : "We need more data to give a clear analysis. Continue checking in daily to establish a baseline.";

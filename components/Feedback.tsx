@@ -140,6 +140,7 @@ const Feedback: React.FC<Props> = ({ identity, logs, onCycleReset, onLogsUpdated
       case 'ALIGNED': return { color: 'text-textPrimary', animation: '' };
       case 'UNSTABLE': return { color: 'text-textSecondary', animation: '' };
       case 'DRIFTING': return { color: 'text-accent', animation: 'animate-pulse-drift' };
+      case 'CALIBRATING': return { color: 'text-textSecondary/60', animation: '' };
       default: return { color: 'text-textSecondary', animation: '' };
     }
   };
@@ -221,6 +222,9 @@ const Feedback: React.FC<Props> = ({ identity, logs, onCycleReset, onLogsUpdated
             <div className="space-y-1">
               <span className="text-[7px] font-mono uppercase text-textSecondary/40 tracking-wider">State Confidence</span>
               <p className="text-xs font-mono text-textPrimary">{coreResult.confidence}%</p>
+              {coreResult.state === 'calibrating' && (
+                <span className="text-[6.5px] font-mono text-textSecondary/50 tracking-widest uppercase block mt-0.5 animate-pulse">Calibrating</span>
+              )}
             </div>
             <div className="space-y-1">
               <span className="text-[7px] font-mono uppercase text-textSecondary/40 tracking-wider">Drift Score</span>
