@@ -13,7 +13,7 @@ export const noahCoreEngine = {
     const analysis = signalAnalyzer.analyze(logs);
 
     // 2. Signal Analyzer -> Drift Detector
-    const driftScore = driftDetector.detect(analysis);
+    const driftScore = driftDetector.detect(analysis, logs);
 
     // 3. Drift Detector -> State Classifier
     const { state, confidence } = stateClassifier.classify(driftScore);
