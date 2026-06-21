@@ -126,8 +126,13 @@ async function startServer() {
 
       const ai = getAi();
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3-pro-preview",
         contents: prompt,
+        config: {
+          thinkingConfig: {
+            thinkingBudget: 32768,
+          },
+        },
       });
 
       // Record successful request in-memory rate-limiter
