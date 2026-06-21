@@ -225,7 +225,7 @@ const IdentitySetup: React.FC<Props> = ({ onLock, onImport, onBack }) => {
                 <div className="flex items-start space-x-3">
                   <Info size={14} className="text-accent mt-0.5" />
                   <p className="text-[10px] text-textSecondary leading-relaxed">
-                    Anchors are specific, measurable actions that prove you are inhabiting your target identity. Use clear behaviors like "Read for 30m" rather than vague aspirations. Note: <strong>Your Primary Anchor behaves as your core identity habit and holds 50% of your signal score weight</strong>, while other anchors hold 25% weight each.
+                    Anchors are specific, measurable actions that prove you are inhabiting your target identity. Use clear behaviors like "Read for 30m" rather than vague aspirations. Note: <strong>Your Primary Anchor behaves as your core identity habit and holds 50% of the Anchor alignment weight (which corresponds directly to 20% of your overall trajectory score)</strong>, while secondary anchors hold 25% of the anchor weight (10% of the global score) each.
                   </p>
                 </div>
               </MotionDiv>
@@ -247,7 +247,7 @@ const IdentitySetup: React.FC<Props> = ({ onLock, onImport, onBack }) => {
                     n[i] = e.target.value;
                     setAnchors(n);
                   }}
-                  placeholder={i === 0 ? "Core Anchor (Direct Definition of Identity — 50% Weight)" : `Secondary Anchor ${i}`}
+                  placeholder={i === 0 ? "Core Anchor (Direct Definition of Identity — 50% Anchor / 20% Global Weight)" : `Secondary Anchor ${i} (25% Anchor / 10% Global Weight)`}
                   className={`w-full bg-muted/20 border rounded-sm p-4 text-sm text-center focus:outline-none transition-all ${i === 0 ? 'border-accent/40 text-accent font-medium' : 'border-border/40 focus:border-accent'} ${a.length > 0 && a.length < 3 ? 'border-red-900/40 text-red-400' : ''}`}
                 />
               </div>

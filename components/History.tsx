@@ -360,7 +360,11 @@ const History: React.FC<Props> = ({ logs, identity, loading: externalLoading, on
                               <span className={isPrimary ? "text-accent font-medium" : "text-textSecondary/70"}>
                                 {anchor}
                               </span>
-                              {isPrimary && <span className="text-[8px] font-mono text-accent/50 uppercase ml-1">(50% weight)</span>}
+                              {isPrimary ? (
+                                <span className="text-[8px] font-mono text-accent/50 uppercase ml-1">(50% anchor / 20% global)</span>
+                              ) : (
+                                <span className="text-[8px] font-mono text-textSecondary/20 uppercase ml-1">(25% anchor / 10% global)</span>
+                              )}
                             </span>
                             <span className={`text-[8.5px] uppercase font-mono px-2 py-0.5 rounded-sm ${completed ? 'text-statusAligned bg-statusAligned/10' : 'text-statusDrift bg-statusDrift/10'}`}>
                               {completed ? "Completed" : "Missed"}
