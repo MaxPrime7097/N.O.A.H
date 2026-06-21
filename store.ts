@@ -51,6 +51,12 @@ export const store = {
     localStorage.setItem(KEYS.LOGS, JSON.stringify([...filtered, log]));
     store.markPending('log', log.id);
   },
+  updateLogDeepAnalysis: (logId: string, analysis: string) => {
+    const logs = store.getLogs();
+    const updated = logs.map(l => l.id === logId ? { ...l, deepAnalysis: analysis } : l);
+    localStorage.setItem(KEYS.LOGS, JSON.stringify(updated));
+    store.markPending('log', logId);
+  },
   
   // Feedback Caching Logic
   getFeedbackForLog: (logId: string): FeedbackData | null => {

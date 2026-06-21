@@ -16,6 +16,7 @@ interface Props {
   identity: UserIdentity;
   logs: DailyLog[];
   onCycleReset: () => void;
+  onLogsUpdated?: () => void;
 }
 
 const FeedbackSkeleton = () => (
@@ -45,7 +46,7 @@ const FeedbackSkeleton = () => (
   </div>
 );
 
-const Feedback: React.FC<Props> = ({ identity, logs, onCycleReset }) => {
+const Feedback: React.FC<Props> = ({ identity, logs, onCycleReset, onLogsUpdated }) => {
   const [data, setData] = useState<FeedbackData | null>(null);
   const [coreResult, setCoreResult] = useState<NoahResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,6 +69,13 @@ const Feedback: React.FC<Props> = ({ identity, logs, onCycleReset }) => {
       setCoreResult(core);
 
       const latestLog = [...logs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+      
+      if (latestLog && latestLog.deepAnalysis) {
+        setDeepAnalysis(latestLog.deepAnalysis);
+      } else {
+        setDeepAnalysis(null);
+      }
+
       const cachedFeedback = store.getFeedbackForLog(latestLog.id);
 
       if (cachedFeedback) {
@@ -90,9 +98,21 @@ const Feedback: React.FC<Props> = ({ identity, logs, onCycleReset }) => {
     setShowDeepModal(true);
     if (!deepAnalysis) {
       setIsAnalyzingDeeply(true);
-      const analysis = await getDeepReflectiveAnalysis(identity, logs);
-      setDeepAnalysis(analysis);
-      setIsAnalyzingDeeply(false);
+      const latestLog = [...logs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+      if (latestLog && latestLog.deepAnalysis) {
+        setDeepAnalysis(latestLog.deepAnalysis);
+        setIsAnalyzingDeeply(false);
+      } else {
+        const analysis = await getDeepReflectiveAnalysis(identity, logs);
+        setDeepAnalysis(analysis);
+        setIsAnalyzingDeeply(false);
+        if (latestLog) {
+          store.updateLogDeepAnalysis(latestLog.id, analysis);
+          if (onLogsUpdated) {
+            onLogsUpdated();
+          }
+        }
+      }
     }
   };
 

@@ -40,9 +40,26 @@ const CheckIn: React.FC<Props> = ({ identity, logs, onComplete }) => {
   // Audio recording states
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [voiceVolume, setVoiceVolume] = useState(0);
+  const [showMuteWarning, setShowMuteWarning] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const idleTimerRef = useRef<number | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const hasDetectedAudioRef = useRef(false);
+  const warningTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close();
+      }
+      if (warningTimeoutRef.current) window.clearTimeout(warningTimeoutRef.current);
+    };
+  }, []);
 
   const today = new Date();
   const MAX_CHARS = 200;
@@ -204,6 +221,57 @@ const CheckIn: React.FC<Props> = ({ identity, logs, onComplete }) => {
         stream.getTracks().forEach(track => track.stop());
       };
 
+      // Set up live volume indicator
+      hasDetectedAudioRef.current = false;
+      setShowMuteWarning(false);
+      setVoiceVolume(0);
+
+      try {
+        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        source.connect(analyser);
+
+        audioContextRef.current = audioCtx;
+        analyserRef.current = analyser;
+
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        const updateVolume = () => {
+          if (!analyserRef.current) return;
+          analyserRef.current.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            sum += dataArray[i];
+          }
+          const average = sum / bufferLength;
+          // Normalize to a 0-100 scale
+          const level = Math.min(100, Math.round((average / 128) * 100));
+          setVoiceVolume(level);
+
+          if (level > 4) {
+            hasDetectedAudioRef.current = true;
+            setShowMuteWarning(false);
+          }
+
+          animationFrameRef.current = requestAnimationFrame(updateVolume);
+        };
+
+        animationFrameRef.current = requestAnimationFrame(updateVolume);
+      } catch (audioErr) {
+        console.error("Audio analyzer failed to initialize cleanly", audioErr);
+      }
+
+      // Check after 3.5 seconds of recording if we ever received input
+      if (warningTimeoutRef.current) window.clearTimeout(warningTimeoutRef.current);
+      warningTimeoutRef.current = window.setTimeout(() => {
+        if (!hasDetectedAudioRef.current) {
+          setShowMuteWarning(true);
+        }
+      }, 3500);
+
       mediaRecorder.start();
       setIsRecording(true);
     } catch (err) {
@@ -212,6 +280,24 @@ const CheckIn: React.FC<Props> = ({ identity, logs, onComplete }) => {
   };
 
   const stopRecording = () => {
+    if (warningTimeoutRef.current) {
+      window.clearTimeout(warningTimeoutRef.current);
+      warningTimeoutRef.current = null;
+    }
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    if (audioContextRef.current) {
+      if (audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close().catch(() => {});
+      }
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    setVoiceVolume(0);
+    setShowMuteWarning(false);
+
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
@@ -440,14 +526,37 @@ const CheckIn: React.FC<Props> = ({ identity, logs, onComplete }) => {
               placeholder={isRecording ? "Listening to signal..." : "Document core reality..."} 
             />
             {isRecording && (
-              <MotionDiv 
-                animate={{ opacity: [0.4, 0.8, 0.4] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute top-4 right-4 pointer-events-none"
-              >
-                <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-              </MotionDiv>
+              <div className="absolute top-4 right-4 pointer-events-none flex items-center space-x-2 bg-bgMain/90 border border-white/10 px-2 py-1 rounded shadow-lg backdrop-blur-sm">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse" />
+                <span className="text-[8px] font-mono uppercase tracking-widest text-textPrimary/70 font-semibold">Live Mic</span>
+                <div className="flex items-end space-x-[2px] h-3 w-8">
+                  <div className="w-[2px] bg-red-500 transition-all duration-75" style={{ height: `${Math.max(15, voiceVolume * 0.8)}%` }} />
+                  <div className="w-[2px] bg-red-500 transition-all duration-75" style={{ height: `${Math.max(15, voiceVolume * 1.2)}%` }} />
+                  <div className="w-[2px] bg-red-500 transition-all duration-75" style={{ height: `${Math.max(15, voiceVolume * 1.0)}%` }} />
+                  <div className="w-[2px] bg-red-500 transition-all duration-75" style={{ height: `${Math.max(15, voiceVolume * 0.6)}%` }} />
+                  <div className="w-[2px] bg-red-500 transition-all duration-75" style={{ height: `${Math.max(15, voiceVolume * 1.1)}%` }} />
+                </div>
+              </div>
             )}
+
+            <AnimatePresence>
+              {showMuteWarning && (
+                <MotionDiv
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute bottom-4 left-4 right-4 bg-red-950/95 border border-red-500/40 p-3 rounded flex items-center space-x-3 z-10 shadow-xl"
+                >
+                  <AlertCircle size={16} className="text-red-400 shrink-0 animate-bounce" />
+                  <div className="flex flex-col space-y-0.5 text-left">
+                    <p className="text-[10px] font-bold font-mono text-red-500 uppercase tracking-widest">No Mic Signal Detected</p>
+                    <p className="text-[8px] font-mono text-red-300 uppercase tracking-widest leading-normal">
+                      Speak clearly, or check your hardware mute switch and browser mic permissions.
+                    </p>
+                  </div>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
           </div>
           
           <div className="text-right flex justify-end items-center space-x-2">

@@ -3,5 +3,8 @@
   "description": "A silent alignment system that helps users detect when their actions drift away from who you want to become. Minimalist, serious, and honest.",
   "requestFramePermissions": [
     "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }

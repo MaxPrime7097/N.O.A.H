@@ -167,6 +167,10 @@ const App: React.FC = () => {
     triggerSync();
   };
 
+  const handleLogsUpdated = () => {
+    setLogs(store.getLogs());
+  };
+
   const handleCycleReset = () => {
     store.clearAll();
     setIdentity(null);
@@ -187,7 +191,7 @@ const App: React.FC = () => {
   };
 
   if (view === 'LANDING') return <Landing onProceed={handleLandingProceed} onEnter={handleLandingEnter} />;
-  if (view === 'AUTH') return <Auth onSuccess={handleAuthSuccess} onSkip={handleLandingEnter} />;
+  if (view === 'AUTH') return <Auth onSuccess={handleAuthSuccess} onSkip={handleLandingEnter} onBack={() => setView('LANDING')} />;
   
   if (isInitializing) {
     return (
@@ -207,15 +211,26 @@ const App: React.FC = () => {
     );
   }
 
-  if (view === 'SETUP' || !identity) return <IdentitySetup onLock={handleIdentityLocked} onImport={handleImport} />;
+  if (view === 'SETUP' || !identity) return <IdentitySetup onLock={handleIdentityLocked} onImport={handleImport} onBack={() => setView('LANDING')} />;
 
   return (
     <div className="min-h-screen bg-bgMain flex flex-col items-center max-w-md mx-auto relative px-6 pb-20 overflow-hidden">
       <header className="w-full py-6 flex justify-between items-center z-20" role="banner">
-        <div className="flex flex-col">
+        <button 
+          onClick={() => setView('LANDING')}
+          className="flex items-center opacity-80 hover:opacity-100 transition-opacity active-feedback text-left"
+          title="Back to Landing"
+        >
           <span className="text-[12px] font-mono tracking-[0.5em] text-textPrimary uppercase font-bold">N.O.A.H</span>
-        </div>
+        </button>
         <div className="flex items-center space-x-3">
+          <button 
+            onClick={() => setView('LANDING')}
+            className="text-[9px] font-mono tracking-widest text-textSecondary/60 hover:text-textPrimary hover:border-textSecondary/30 uppercase border border-white/10 py-1.5 px-3 rounded-sm transition-all active-feedback"
+            aria-label="Back to Landing"
+          >
+            Landing
+          </button>
           {isSyncing && (
             <MotionDiv 
               initial={{ opacity: 0 }}
@@ -283,8 +298,8 @@ const App: React.FC = () => {
             className="w-full flex-grow flex flex-col"
           >
             {view === 'CHECKIN' && <CheckIn identity={identity} logs={logs} onComplete={handleLogSubmitted} />}
-            {view === 'FEEDBACK' && <Feedback identity={identity} logs={logs} onCycleReset={handleCycleReset} />}
-            {view === 'HISTORY' && <History logs={logs} identity={identity} loading={isSyncing} />}
+            {view === 'FEEDBACK' && <Feedback identity={identity} logs={logs} onCycleReset={handleCycleReset} onLogsUpdated={handleLogsUpdated} />}
+            {view === 'HISTORY' && <History logs={logs} identity={identity} loading={isSyncing} onLogsUpdated={handleLogsUpdated} />}
             {view === 'RENEWAL' && identity && <Renewal identity={identity} logs={logs} onRecommit={handleRecommit} onReset={handleCycleReset} />}
             {view === 'IDENTITY' && <IdentityView identity={identity} />}
           </MotionDiv>

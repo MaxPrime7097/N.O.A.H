@@ -11,6 +11,7 @@ export interface DailyLog {
   timeSpent: number;
   energy: EnergyLevel;
   anchorsCompleted?: boolean[];
+  deepAnalysis?: string; // stored deep analysis for this particular log/trajectory status
 }
 
 // Equivalent to 'identities' table

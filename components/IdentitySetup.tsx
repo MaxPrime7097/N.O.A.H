@@ -12,9 +12,10 @@ const MotionP = motion.p as any;
 interface Props {
   onLock: (id: UserIdentity) => void;
   onImport: (identity: UserIdentity, logs: DailyLog[]) => void;
+  onBack?: () => void;
 }
 
-const IdentitySetup: React.FC<Props> = ({ onLock, onImport }) => {
+const IdentitySetup: React.FC<Props> = ({ onLock, onImport, onBack }) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [role, setRole] = useState('');
   const [anchors, setAnchors] = useState(['', '', '']);
@@ -97,6 +98,14 @@ const IdentitySetup: React.FC<Props> = ({ onLock, onImport }) => {
   if (slideIndex < slides.length) {
     return (
       <div className="min-h-screen bg-bgMain flex flex-col items-center justify-center p-12 text-center relative">
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="absolute top-12 left-12 text-[9px] font-mono tracking-[0.3em] uppercase text-textSecondary/40 hover:text-textPrimary transition-colors active-feedback"
+          >
+            ← Back
+          </button>
+        )}
         <button 
           onClick={handleSkipSlides}
           className="absolute top-12 right-12 text-[9px] font-mono tracking-[0.3em] uppercase text-textSecondary/40 hover:text-textPrimary transition-colors"
@@ -135,8 +144,16 @@ const IdentitySetup: React.FC<Props> = ({ onLock, onImport }) => {
     <MotionDiv 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-bgMain flex flex-col items-center p-6 pt-20 text-center"
+      className="min-h-screen bg-bgMain flex flex-col items-center p-6 pt-20 text-center relative"
     >
+      {onBack && (
+        <button 
+          onClick={onBack}
+          className="absolute top-8 left-8 text-[9px] font-mono tracking-[0.3em] uppercase text-textSecondary/40 hover:text-textPrimary transition-colors active-feedback"
+        >
+          ← Back
+        </button>
+      )}
       <AnimatePresence>
         {importStatus === 'verifying' && (
           /* Fixed motion.div with MotionDiv any cast */
@@ -208,26 +225,32 @@ const IdentitySetup: React.FC<Props> = ({ onLock, onImport }) => {
                 <div className="flex items-start space-x-3">
                   <Info size={14} className="text-accent mt-0.5" />
                   <p className="text-[10px] text-textSecondary leading-relaxed">
-                    Anchors are specific, measurable actions that prove you are inhabiting your target identity. Avoid vague goals; use clear behaviors like "Write 500 words" or "Study for 60m".
+                    Anchors are specific, measurable actions that prove you are inhabiting your target identity. Use clear behaviors like "Read for 30m" rather than vague aspirations. Note: <strong>Your Primary Anchor behaves as your core identity habit and holds 50% of your signal score weight</strong>, while other anchors hold 25% weight each.
                   </p>
                 </div>
               </MotionDiv>
             )}
           </AnimatePresence>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {anchors.map((a, i) => (
-              <input
-                key={i}
-                type="text"
-                value={a}
-                onChange={(e) => {
-                  const n = [...anchors];
-                  n[i] = e.target.value;
-                  setAnchors(n);
-                }}
-                placeholder={`Behavioral Anchor ${i + 1}`}
-                className={`w-full bg-muted/20 border rounded-sm p-4 text-sm text-center focus:outline-none transition-all ${a.length > 0 && a.length < 3 ? 'border-red-900/40 text-red-400' : 'border-border/40 focus:border-accent'}`}
-              />
+              <div key={i} className="relative">
+                {i === 0 && (
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-accent text-[8px] font-mono font-bold uppercase tracking-widest text-bgMain px-2 py-0.5 rounded-sm z-10 shadow-[0_0_10px_rgba(20,184,166,0.25)]">
+                    Primary / Core Identity Anchor
+                  </span>
+                )}
+                <input
+                  type="text"
+                  value={a}
+                  onChange={(e) => {
+                    const n = [...anchors];
+                    n[i] = e.target.value;
+                    setAnchors(n);
+                  }}
+                  placeholder={i === 0 ? "Core Anchor (Direct Definition of Identity — 50% Weight)" : `Secondary Anchor ${i}`}
+                  className={`w-full bg-muted/20 border rounded-sm p-4 text-sm text-center focus:outline-none transition-all ${i === 0 ? 'border-accent/40 text-accent font-medium' : 'border-border/40 focus:border-accent'} ${a.length > 0 && a.length < 3 ? 'border-red-900/40 text-red-400' : ''}`}
+                />
+              </div>
             ))}
           </div>
           {!uniqueAnchors && <p className="text-[9px] font-mono text-accent uppercase">Anchors must be unique</p>}

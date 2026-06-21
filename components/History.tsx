@@ -2,13 +2,16 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { DailyLog, EnergyLevel, UserIdentity } from '../types';
 import { noahCoreEngine } from '../noah-core/engine';
-import { Download, Activity } from 'lucide-react';
+import { Download, Activity, ChevronDown, ChevronUp, BrainCircuit, Star } from 'lucide-react';
 import { DriftState } from '../noah-core/types';
+import { getDeepReflectiveAnalysis } from '../services/geminiService';
+import { store } from '../store';
 
 interface Props {
   logs: DailyLog[];
   identity?: UserIdentity;
   loading?: boolean;
+  onLogsUpdated?: () => void;
 }
 
 const HistorySkeleton = () => (
@@ -40,14 +43,34 @@ const HistorySkeleton = () => (
   </div>
 );
 
-const History: React.FC<Props> = ({ logs, identity, loading: externalLoading }) => {
+const History: React.FC<Props> = ({ logs, identity, loading: externalLoading, onLogsUpdated }) => {
   const [internalLoading, setInternalLoading] = useState(true);
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
+  const [localThinkingId, setLocalThinkingId] = useState<string | null>(null);
 
   useEffect(() => {
     // Artificial brief delay to allow skeleton to be perceived during "processing"
     const timer = setTimeout(() => setInternalLoading(false), 600);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleTriggerDeepAnalysis = async (targetLog: DailyLog) => {
+    if (localThinkingId || !identity) return;
+    setLocalThinkingId(targetLog.id);
+    try {
+      const targetTime = new Date(targetLog.date).getTime();
+      const logsUpToTarget = logs.filter(l => new Date(l.date).getTime() <= targetTime);
+      const analysis = await getDeepReflectiveAnalysis(identity, logsUpToTarget);
+      store.updateLogDeepAnalysis(targetLog.id, analysis);
+      if (onLogsUpdated) {
+        onLogsUpdated();
+      }
+    } catch (err) {
+      console.error("Local deep trajectory analysis failed:", err);
+    } finally {
+      setLocalThinkingId(null);
+    }
+  };
 
   const isLoading = externalLoading || internalLoading;
 
@@ -245,33 +268,129 @@ const History: React.FC<Props> = ({ logs, identity, loading: externalLoading }) 
       )}
 
       {/* Detailed List */}
-      <div className="space-y-6" role="list">
+      <div className="space-y-4" role="list">
         {history.map((log, idx) => {
           const date = new Date(log.date);
           const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
-          
+          const isExpanded = expandedLogId === log.id;
+          const isThinking = localThinkingId === log.id;
+
+          const handleToggle = () => {
+            setExpandedLogId(isExpanded ? null : log.id);
+          };
+
           return (
-            <div key={idx} role="listitem" className="flex items-center justify-between group border-b border-white/5 pb-4 last:border-0 hover:bg-white/[0.01] transition-colors rounded-sm px-1">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-mono tracking-[0.15em] text-textSecondary/80 group-hover:text-textPrimary transition-colors">
-                  {formattedDate}
-                </span>
-                <div className="flex items-center space-x-2 mt-1">
-                  <span className="text-[9px] font-mono text-textSecondary/20">
-                    {log.timeSpent}m
+            <div 
+              key={idx} 
+              role="listitem" 
+              className="border-b border-white/5 pb-4 last:border-0 hover:bg-white/[0.01] transition-all rounded px-2 py-2"
+            >
+              {/* Row Header - Clickable */}
+              <div 
+                onClick={handleToggle}
+                className="flex items-center justify-between cursor-pointer group select-none"
+              >
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-mono tracking-[0.15em] text-textSecondary/80 group-hover:text-textPrimary transition-colors">
+                    {formattedDate}
                   </span>
-                  <span className="text-[9px] font-mono text-textSecondary/20">•</span>
-                  <span className="text-[9px] font-mono text-textSecondary/20 uppercase tracking-tighter">
-                    {log.state}
-                  </span>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <span className="text-[9px] font-mono text-textSecondary/20">
+                      {log.timeSpent}m
+                    </span>
+                    <span className="text-[9px] font-mono text-textSecondary/20">•</span>
+                    <span className="text-[9px] font-mono text-textSecondary/20 uppercase tracking-tighter">
+                      {log.state}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className={`w-2.5 h-2.5 rounded-sm ${getIndicatorColor(log)} transition-all duration-700 shadow-sm`} 
+                    role="img"
+                    aria-label={`Alignment indicator for ${formattedDate}`}
+                  />
+                  <div className="text-textSecondary/40 group-hover:text-textPrimary transition-colors">
+                    {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </div>
                 </div>
               </div>
-              
-              <div 
-                className={`w-2.5 h-2.5 rounded-sm ${getIndicatorColor(log)} transition-all duration-700 shadow-sm`} 
-                role="img"
-                aria-label={`Alignment indicator for ${formattedDate}`}
-              />
+
+              {/* Expandable Details Area */}
+              {isExpanded && (
+                <div className="mt-4 pt-4 border-t border-white/[0.03] space-y-4 text-left animate-fade-in">
+                  {/* Daily Note */}
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-mono tracking-widest text-textSecondary/40 uppercase block">Inscribed Documentation</span>
+                    <p className="text-xs font-light text-textPrimary leading-relaxed p-3 bg-white/[0.02] border border-white/5 rounded-sm whitespace-pre-wrap">
+                      {log.note || "No textual logs left for this check-in."}
+                    </p>
+                  </div>
+
+                  {/* 3-Column Metrics details */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="p-2 border border-white/5 bg-white/[0.01] rounded-sm">
+                      <span className="text-[7.5px] font-mono tracking-wider text-textSecondary/30 uppercase block">Effort Spent</span>
+                      <span className="text-xs text-textSecondary font-mono">{log.timeSpent} mins</span>
+                    </div>
+                    <div className="p-2 border border-white/5 bg-white/[0.01] rounded-sm">
+                      <span className="text-[7.5px] font-mono tracking-wider text-textSecondary/30 uppercase block">Energy signal</span>
+                      <span className="text-xs text-textSecondary font-mono">{log.energy}</span>
+                    </div>
+                    <div className="p-2 border border-white/5 bg-white/[0.01] rounded-sm">
+                      <span className="text-[7.5px] font-mono tracking-wider text-textSecondary/30 uppercase block">Mental State</span>
+                      <span className="text-xs text-textSecondary font-mono uppercase">{log.state}</span>
+                    </div>
+                  </div>
+
+                  {/* Anchors list */}
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-mono tracking-widest text-textSecondary/40 uppercase block mb-1">Anchor Alignment Score</span>
+                    <div className="space-y-1.5">
+                      {identity?.anchors.map((anchor, targetIdx) => {
+                        const completed = log.anchorsCompleted?.[targetIdx] ?? false;
+                        const isPrimary = targetIdx === 0;
+                        return (
+                          <div key={targetIdx} className="flex items-center justify-between text-[10px] p-2 rounded-sm bg-white/[0.01] border border-white/5">
+                            <span className="flex items-center space-x-1.5">
+                              {isPrimary && <Star size={10} className="text-accent fill-accent" />}
+                              <span className={isPrimary ? "text-accent font-medium" : "text-textSecondary/70"}>
+                                {anchor}
+                              </span>
+                              {isPrimary && <span className="text-[8px] font-mono text-accent/50 uppercase ml-1">(50% weight)</span>}
+                            </span>
+                            <span className={`text-[8.5px] uppercase font-mono px-2 py-0.5 rounded-sm ${completed ? 'text-statusAligned bg-statusAligned/10' : 'text-statusDrift bg-statusDrift/10'}`}>
+                              {completed ? "Completed" : "Missed"}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Deep Analysis Result or Trigger */}
+                  <div className="pt-2">
+                    {log.deepAnalysis ? (
+                      <div className="space-y-1.5">
+                        <span className="text-[8px] font-mono tracking-widest text-accent uppercase font-bold block">SAVED DEEP ANALYSIS</span>
+                        <div className="text-[11px] font-light text-textPrimary leading-relaxed p-4 bg-accent/[0.02] border border-accent/20 rounded-sm whitespace-pre-wrap">
+                          {log.deepAnalysis}
+                        </div>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={() => handleTriggerDeepAnalysis(log)}
+                        disabled={isThinking}
+                        className="flex items-center justify-center space-x-2 w-full border border-accent/10 hover:border-accent/30 py-3 text-[9px] font-mono tracking-[0.2em] uppercase text-accent hover:bg-accent/5 transition-all active-feedback disabled:opacity-50"
+                      >
+                        <BrainCircuit size={12} className={isThinking ? "animate-spin" : ""} />
+                        <span>{isThinking ? "Processing Trajectory Analysis..." : "Trigger Deep Analysis for this state"}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}

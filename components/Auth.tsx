@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 interface Props {
   onSuccess: (email: string) => void;
   onSkip: () => void;
+  onBack?: () => void;
 }
 
-const Auth: React.FC<Props> = ({ onSuccess, onSkip }) => {
+const Auth: React.FC<Props> = ({ onSuccess, onSkip, onBack }) => {
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -17,7 +18,15 @@ const Auth: React.FC<Props> = ({ onSuccess, onSkip }) => {
   };
 
   return (
-    <div className="min-h-screen bg-bgMain flex flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
+    <div className="min-h-screen bg-bgMain flex flex-col items-center justify-center p-6 animate-in fade-in duration-1000 relative">
+      {onBack && (
+        <button 
+          onClick={onBack}
+          className="absolute top-12 left-12 text-[9px] font-mono tracking-[0.3em] uppercase text-textSecondary/40 hover:text-textPrimary transition-colors active-feedback"
+        >
+          ← Back
+        </button>
+      )}
       <div className="w-full max-w-xs space-y-12">
         <div className="space-y-6">
           <h1 className="text-xs font-mono tracking-[0.4em] uppercase text-textSecondary text-center">
